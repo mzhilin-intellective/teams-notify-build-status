@@ -25579,7 +25579,7 @@ const constructPayLoad = __nccwpck_require__(4645);
 const validateUrls = __nccwpck_require__(9712);
 const validateTitleBackgroundColour = __nccwpck_require__(4348);
 
-const main = async function (webhookUrlInput, message, {
+const main = async function (webhookUrlInput, message, annotations, {
     status,
     title,
     titleBackgroundColor,
@@ -25588,7 +25588,7 @@ const main = async function (webhookUrlInput, message, {
     validateUrls(webhookUrls);
     titleBackgroundColor = titleBackgroundColor?.toLowerCase();
     validateTitleBackgroundColour(titleBackgroundColor);
-    const requestPayload = constructPayLoad(message, {
+    const requestPayload = constructPayLoad(message, annotations, {
         status,
         title,
         titleBackgroundColor,
@@ -25622,12 +25622,13 @@ const envs = __nccwpck_require__(3263);
 const color = __nccwpck_require__(1158);
 
 class CustomizeCard {
-    constructor(message, {
+    constructor(message, annotations, {
         status,
         title,
         titleBackgroundColor,
     }) {
         this.message = message;
+        this.annotations = this.annotations;
         this.status = status;
         this.title = title;
         this.titleBackgroundColor = titleBackgroundColor;
@@ -25739,12 +25740,11 @@ class CustomizeCard {
                                                 "text": this.message,
                                                 "wrap": true,
                                             },
-                                            {
-                                              "type": "CodeBlock",
-                                              "codeSnippet": "/**\n* @author John Smith <john.smith@example.com>\n*/\npackage l2f.gameserver.model;\n\npublic abstract strictfp class L2Char extends L2Object {\n  public static final Short ERROR = 0x0001;\n\n  public void moveTo(int x, int y, int z) {\n    _ai = null;\n    log(\"Shouldn't be called\");\n    if (1 > 5) { // what!?\n      return;\n    }\n  }\n}",
-                                              "language": "java",
-                                              "startLineNumber": 61
-                                            },
+                                            ...(this.annotations ? [{
+                                                "type": "CodeBlock",
+                                                "codeSnippet": this.annotations,
+                                                "language": "PlainText"
+                                            }] : [])
                                         ],
                                     },
                                     {
@@ -25915,12 +25915,12 @@ module.exports = envs;
 
 const CustomizeCard = __nccwpck_require__(8111);
 
-const payLoad = function constructPayload(message, {
+const payLoad = function constructPayload(message, annotations, {
     status,
     title,
     titleBackgroundColor,
 }) {
-    return new CustomizeCard(message, {
+    return new CustomizeCard(message, annotations, {
         status,
         title,
         titleBackgroundColor,
@@ -26286,11 +26286,12 @@ async function run() {
         core.setSecret(webhookUrlInputId);
         const webhookUrlInput = core.getInput(webhookUrlInputId, { required: true });
         const message = core.getInput('message', { required: true });
+        const annotations = core.getInput('annotations');
         const status = core.getInput('status');
         const title = core.getInput('title');
         const titleBackgroundColor = core.getInput('titleBackgroundColor');
 
-        await main(webhookUrlInput, message, {
+        await main(webhookUrlInput, message, annotations, {
             status,
             title,
             titleBackgroundColor,
