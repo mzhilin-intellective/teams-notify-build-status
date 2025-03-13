@@ -25628,7 +25628,7 @@ class CustomizeCard {
         titleBackgroundColor,
     }) {
         this.message = message;
-        this.annotations = this.annotations;
+        this.annotations = annotations;
         this.status = status;
         this.title = title;
         this.titleBackgroundColor = titleBackgroundColor;
@@ -25740,11 +25740,6 @@ class CustomizeCard {
                                                 "text": this.message,
                                                 "wrap": true,
                                             },
-                                            ...(this.annotations ? [{
-                                                "type": "CodeBlock",
-                                                "codeSnippet": this.annotations,
-                                                "language": "PlainText"
-                                            }] : [])
                                         ],
                                     },
                                     {
@@ -25768,7 +25763,12 @@ class CustomizeCard {
                                         ]
                                     }
                                 ]
-                            }
+                            },
+                            ...(this.annotations ? [{
+                              "type": "CodeBlock",
+                              "codeSnippet": this.annotations,
+                              "language": "PlainText"
+                          }] : [])
                         ]
                     }
                 }
